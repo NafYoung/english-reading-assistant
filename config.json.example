@@ -1,0 +1,11 @@
+{
+  "base_url": "https://api.deepseek.com/v1",
+  "api_key": "YOUR_DEEPSEEK_API_KEY",
+  "model": "deepseek-chat",
+  "system_prompt": "你是一个英文阅读助手。请使用简体中文回答，先给出准确翻译，再列出关键单词或短语的中文解释，最后解析句型、语法与常见用法。内容要清楚、精简，方便使用者快速查询英文原文。",
+  "timeout_seconds": 30,
+  "obsidian": {
+    "vault_path": "/Users/yourname/Documents/ObsidianVault",
+    "note_path": "Inbox/English Reading.md"
+  }
+}
