@@ -1,0 +1,45 @@
+{% extends "base.html" %}
+{% block title %}词表 · 阅读教练{% endblock %}
+{% block body %}
+<section class="panel">
+  <h1>词表</h1>
+  <p class="lead">查一个词，看它目前是显式状态还是词频档先验。</p>
+  {% if profile %}
+  <p class="hint">当前估计词汇量 {{ profile.vocab_estimate }}。</p>
+  {% endif %}
+  <form method="get" action="/vocab" class="inline">
+    <input type="text" name="q" value="{{ q }}" placeholder="例如 reach">
+    <button type="submit">查询</button>
+  </form>
+  {% if result %}
+  <article>
+    <h2>{{ result.lemma }}</h2>
+    <p class="metric">{{ result.label }}</p>
+    {% if result.explicit %}
+    <p>置信度 {{ result.explicit["confidence"] }} · 查阅 {{ result.explicit["lookups"] }} · 遇见 {{ result.explicit["encounters"] }}</p>
+    {% else %}
+    <p class="hint">还没有显式记录。概率来自分级测试得到的词频档先验：p = 1 / (1 + exp((rank − V) / 0.15V))。</p>
+    {% endif %}
+  </article>
+  {% endif %}
+  <h2>最近更新</h2>
+  {% if rows %}
+  <table>
+    <thead><tr><th>lemma</th><th>状态</th><th>来源</th><th>置信度</th><th>查阅</th></tr></thead>
+    <tbody>
+      {% for r in rows %}
+      <tr>
+        <td><a href="/vocab?q={{ r['lemma'] }}">{{ r["lemma"] }}</a></td>
+        <td>{{ r["status"] }}</td>
+        <td>{{ r["source"] }}</td>
+        <td>{{ "%.2f"|format(r["confidence"]) }}</td>
+        <td>{{ r["lookups"] }}</td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+  {% else %}
+  <p class="empty">词表还是空的。先做分级测试或导入 TXT。</p>
+  {% endif %}
+</section>
+{% endblock %}
