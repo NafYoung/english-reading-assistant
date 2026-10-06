@@ -19,23 +19,19 @@ router = APIRouter()
 
 
 @router.get("/placement")
-def placement_get(request: Request, run_id: int | None = None, done: int = 0):
+def placement_get(request: Request, run_id: int | None = None, done: int = 0):  # noqa: ARG001
     cfg = load_config()
     conn = connect(cfg)
     try:
-        if done and run_id:
-            run = load_run(conn, run_id)
-            profile = None
-            if run and run.finished:
-                row = conn.execute("SELECT * FROM learner_profile WHERE id=1").fetchone()
-                profile = row
+        run = load_run(conn, run_id) if run_id else None
+        if run is not None and run.finished:
+            row = conn.execute("SELECT * FROM learner_profile WHERE id=1").fetchone()
             return page(
                 request,
                 "placement_result.html",
-                {"run": run, "profile": profile},
+                {"run": run, "profile": row},
             )
-        run = load_run(conn, run_id) if run_id else None
-        if run is None or run.finished:
+        if run is None:
             run = start_run(conn)
         batch = []
         start = run.cursor_idx
@@ -47,7 +43,7 @@ def placement_get(request: Request, run_id: int | None = None, done: int = 0):
             if run.stage == 1:
                 run = maybe_advance_stage(conn, run)
                 return RedirectResponse(f"/placement?run_id={run.id}", status_code=303)
-            profile = finish_run(conn, run)
+            finish_run(conn, run)
             return RedirectResponse(f"/placement?run_id={run.id}&done=1", status_code=303)
         total = 80
         answered = len(run.answers)

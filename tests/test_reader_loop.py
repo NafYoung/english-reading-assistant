@@ -81,6 +81,8 @@ def test_reader_flow_lookup_quiz_writeback(client):
     )
     assert look.status_code == 200
     assert "ECDICT" in look.text
+    # predicted-known words stay clickable so NO_FIT terms like transformer can be inspected
+    assert 'data-lemma="transformer"' in res.text or 'data-lemma="latency"' in res.text
     hint3 = client.get("/api/hint", params={"session_id": sid, "sentence_id": 1, "level": 3})
     assert "严格模式" in hint3.text or "结构" in hint3.text
     client.get("/api/hint", params={"session_id": sid, "sentence_id": 1, "level": 2})

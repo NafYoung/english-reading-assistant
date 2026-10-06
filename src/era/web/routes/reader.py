@@ -89,12 +89,11 @@ def _render_sentence(conn, profile, analysis, sent) -> str:
         parts.append(html.escape(local[cursor:start]))
         surface = local[start:end]
         lemma = item.lemma
-        unknown = False
-        if lemma and not item.is_proper and not item.is_short:
-            unknown = is_predicted_unknown(p_known(conn, lemma, profile))
-        if unknown:
+        if lemma and not item.is_proper:
+            unknown = (not item.is_short) and is_predicted_unknown(p_known(conn, lemma, profile))
+            cls = "word unknown" if unknown else "word"
             parts.append(
-                f'<button type="button" class="unknown" data-lemma="{html.escape(lemma)}" '
+                f'<button type="button" class="{cls}" data-lemma="{html.escape(lemma)}" '
                 f'data-surface="{html.escape(surface)}" data-sentence-id="{sent["id"]}">{html.escape(surface)}</button>'
             )
         else:
