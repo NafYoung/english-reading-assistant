@@ -1,0 +1,23 @@
+{% extends "base.html" %}
+{% block title %}复习 · 阅读教练{% endblock %}
+{% block body %}
+<section class="panel">
+  <h1>复习</h1>
+  <p class="hint">剩余到期 {{ remaining }} 张。</p>
+  {% if card %}
+  <article>
+    <h2>{{ card["lemma"] }}</h2>
+    {% if context %}<p class="sentence">{{ context }}</p>{% endif %}
+    <form method="post" action="/review" class="inline">
+      <input type="hidden" name="lemma" value="{{ card['lemma'] }}">
+      <button name="rating" value="again">Again</button>
+      <button name="rating" value="hard" class="ghost">Hard</button>
+      <button name="rating" value="good">Good</button>
+      <button name="rating" value="easy" class="ghost">Easy</button>
+    </form>
+  </article>
+  {% else %}
+  <p class="empty">今天没有到期卡片。阅读时点过的生词会在这里出现。</p>
+  {% endif %}
+</section>
+{% endblock %}

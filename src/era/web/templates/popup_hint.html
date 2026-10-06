@@ -1,0 +1,18 @@
+<div class="hint-card">
+  {% if level == 2 %}
+  <p><strong>主干</strong> 主：{{ data.main_clause.get("subject","") }} · 谓：{{ data.main_clause.get("verb","") }} · 宾：{{ data.main_clause.get("object","") }}</p>
+  {% if data.chunks %}
+  <p>
+    {% for c in data.chunks %}<span class="chunk">{{ c }}</span>{% endfor %}
+  </p>
+  {% endif %}
+  <p class="hint">{{ data.note_zh }}</p>
+  {% else %}
+  {% if data.ok %}
+  <p>{{ data.zh }}</p>
+  {% else %}
+  <p class="flash err">{{ data.get("error") or "翻译不可用。请先在设置页填写 DeepSeek API Key。" }}</p>
+  {% endif %}
+  {% endif %}
+</div>
+<style>.chunk { display:inline-block; margin-right:0.4rem; border-bottom:1px dotted var(--accent); }</style>

@@ -101,7 +101,15 @@ footer {
   font-size: 0.82rem;
 }
 a { color: var(--accent-2); }
-.unknown { text-decoration: underline wavy var(--accent); cursor: pointer; }
+.unknown {
+  text-decoration: underline wavy var(--accent);
+  cursor: pointer;
+  background: none;
+  border: 0;
+  color: inherit;
+  font: inherit;
+  padding: 0;
+}
 .sentence { margin: 0.8rem 0; font-family: var(--serif); font-size: 1.15rem; }
 .hintbar { display: flex; gap: 0.5rem; margin-top: 0.35rem; }
 .popup {

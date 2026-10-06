@@ -1,0 +1,16 @@
+{% extends "base.html" %}
+{% block title %}结束确认 · 阅读教练{% endblock %}
+{% block body %}
+<section class="panel">
+  <h1>这些词你认识吗？</h1>
+  <p class="lead">下面是预测生词但你没点开的。勾选「认识」会写成 known；不勾则进入学习卡片。</p>
+  <form method="post" action="/session/{{ session['id'] }}/end" class="stack">
+    {% for w in pending %}
+    <label class="check"><input type="checkbox" name="known" value="{{ w }}"> {{ w }}</label>
+    {% else %}
+    <p class="empty">没有需要确认的词。</p>
+    {% endfor %}
+    <button type="submit">进入测验</button>
+  </form>
+</section>
+{% endblock %}
