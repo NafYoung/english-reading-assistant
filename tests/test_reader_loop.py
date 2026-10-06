@@ -81,6 +81,13 @@ def test_reader_flow_lookup_quiz_writeback(client):
     )
     assert look.status_code == 200
     assert "ECDICT" in look.text
+    from era.config import load_config
+    from era.db import connect
+
+    conn = connect(load_config())
+    sess = conn.execute("SELECT words_read FROM sessions WHERE id=?", (sid,)).fetchone()
+    assert sess["words_read"] > 0
+    conn.close()
     # predicted-known words stay clickable so NO_FIT terms like transformer can be inspected
     assert 'data-lemma="transformer"' in res.text or 'data-lemma="latency"' in res.text
     hint3 = client.get("/api/hint", params={"session_id": sid, "sentence_id": 1, "level": 3})
