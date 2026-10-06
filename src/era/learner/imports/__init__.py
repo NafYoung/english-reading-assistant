@@ -1,0 +1,1 @@
+"""Vocabulary import adapters."""

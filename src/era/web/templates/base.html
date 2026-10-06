@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{% block title %}阅读教练{% endblock %}</title>
+  <link rel="stylesheet" href="/static/app.css">
+  <script src="/static/htmx.min.js" defer></script>
+</head>
+<body>
+  <header class="top">
+    <a class="brand" href="/">阅读教练</a>
+    <p class="tag">目标语料驱动 · 词典落地 · 逐步撤掉翻译拐杖</p>
+    <nav>
+      {% for href, label in nav %}
+      <a href="{{ href }}" {% if request.url.path.startswith(href) %}class="on"{% endif %}>{{ label }}</a>
+      {% endfor %}
+    </nav>
+    <div class="status">
+      {% if dict_ready %}<span class="ok">词典 {{ dict_count }} 条</span>{% else %}<span class="warn">词典未就绪</span>{% endif %}
+      {% if has_key %}<span class="ok">LLM 已配置</span>{% else %}<span class="warn">未填 API Key</span>{% endif %}
+    </div>
+  </header>
+  <main>
+    {% block body %}{% endblock %}
+  </main>
+  <footer>
+    <p>本地应用，只监听 127.0.0.1。密钥保存在本机 <code>config.json</code>，不会上传。</p>
+    <p>旧 Tk 桌面版见 tag <a href="https://github.com/NafYoung/english-reading-assistant/releases/tag/v0-tk">v0-tk</a>。</p>
+  </footer>
+</body>
+</html>
