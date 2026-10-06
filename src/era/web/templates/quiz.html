@@ -1,0 +1,36 @@
+{% extends "base.html" %}
+{% block title %}读后测验 · 阅读教练{% endblock %}
+{% block body %}
+<section class="panel">
+  <h1>读后测验</h1>
+  {% if done %}
+  <p class="flash ok">得分 {{ score }} / {{ total }}</p>
+  <p><a href="/review">去复习</a> · <a href="/vocab">看词表</a> · <a href="/corpora">回语料</a></p>
+  {% else %}
+  <form method="post" action="/session/{{ session_id }}/quiz" class="stack">
+    {% for it in items.comprehension %}
+    {% set qi = loop.index0 %}
+    <article>
+      <p><strong>理解 {{ loop.index }}.</strong> {{ it.question }}</p>
+      {% for k, v in it.options.items() %}
+      <label class="check"><input type="radio" name="c{{ qi }}" value="{{ k }}" required> {{ k }}. {{ v }}</label>
+      {% endfor %}
+    </article>
+    {% endfor %}
+    {% for it in items.cloze %}
+    {% set zi = loop.index0 %}
+    <article>
+      <p><strong>填空 {{ loop.index }}.</strong> {{ it.sentence }}</p>
+      {% for opt in it.options %}
+      <label class="check"><input type="radio" name="z{{ zi }}" value="{{ opt }}" required> {{ opt }}</label>
+      {% endfor %}
+    </article>
+    {% endfor %}
+    {% if not items.comprehension and not items.cloze %}
+    <p class="hint">这次没有题目。提交后仍会结束会话。</p>
+    {% endif %}
+    <button type="submit">提交</button>
+  </form>
+  {% endif %}
+</section>
+{% endblock %}

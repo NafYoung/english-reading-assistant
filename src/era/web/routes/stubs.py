@@ -8,7 +8,6 @@ from era.web.deps import page
 router = APIRouter()
 
 STUBS = [
-    ("/review", "复习", "review"),
     ("/dashboard", "仪表盘", "dashboard"),
     ("/evals", "评测", "evals"),
 ]

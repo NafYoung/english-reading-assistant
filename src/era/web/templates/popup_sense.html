@@ -1,0 +1,29 @@
+<div class="sense">
+  <p><strong>{{ data.surface }}</strong> <small>{{ data.lemma }}</small></p>
+  {% if data.no_fit or data.empty %}
+  <p class="flash err">词典中没有符合本句的义项。该词已进入<a href="/glossary">术语审核</a>队列。下面是原始候选，系统没有编造释义。</p>
+  {% endif %}
+  {% if data.invalid %}
+  <p class="hint">模型输出了非法编号，已重试。下面列出全部候选。</p>
+  {% endif %}
+  {% if data.note_zh and not data.no_fit %}<p>{{ data.note_zh }}</p>{% endif %}
+  <h4>英文义项 <small>ECDICT</small></h4>
+  <ul>
+    {% for s in data.en %}
+    <li {% if s.id == data.chosen.en_sense %}class="chosen"{% endif %}>{{ s.id }} · {{ s.text }}</li>
+    {% else %}<li class="hint">无</li>{% endfor %}
+  </ul>
+  <h4>中文义项 <small>ECDICT</small></h4>
+  <ul>
+    {% for s in data.zh %}
+    <li {% if s.id == data.chosen.zh_sense %}class="chosen"{% endif %}>{{ s.id }} · {{ s.text }}</li>
+    {% else %}<li class="hint">无</li>{% endfor %}
+  </ul>
+  <h4>术语表（已审核）</h4>
+  <ul>
+    {% for s in data.glossary %}
+    <li {% if s.id == data.chosen.glossary %}class="chosen"{% endif %}>{{ s.id }} · {{ s.text }}</li>
+    {% else %}<li class="hint">无</li>{% endfor %}
+  </ul>
+</div>
+<style>.chosen { background: #f4e6c8; }</style>

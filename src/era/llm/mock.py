@@ -54,8 +54,14 @@ def mock_response(
 
 
 def _sense_pick(user: str) -> dict[str, Any]:
-    no_fit_hint = "transformer" in user.lower() or "NO_FIT_TRIGGER" in user
-    if no_fit_hint and "G1" not in user:
+    word = ""
+    m = re.search(r"WORD:\s+(\S+)", user)
+    if m:
+        word = m.group(1).lower()
+    lemma_m = re.search(r"lemma (\S+)\)", user)
+    lemma = lemma_m.group(1).lower() if lemma_m else word
+    no_fit_lemmas = {"transformer", "embedding", "orchestrator", "agentic"}
+    if lemma in no_fit_lemmas and "G1" not in user:
         return {
             "content": json.dumps(
                 {

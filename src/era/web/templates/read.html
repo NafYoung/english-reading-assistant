@@ -1,0 +1,22 @@
+{% extends "base.html" %}
+{% block title %}{{ doc["title"] }} · 阅读{% endblock %}
+{% block body %}
+<section class="panel reader">
+  <h1>{{ doc["title"] }}</h1>
+  <p class="hint">波浪线是预测生词（L1）。卡住时先看结构（L2），最后才看中文（L3）。{% if strict %}严格模式开着。{% endif %}</p>
+  <p><a href="/session/{{ session_id }}/end">结束阅读</a></p>
+  {% for sent, html in rendered %}
+  <div class="sentence" id="s-{{ sent['id'] }}" data-sentence-id="{{ sent['id'] }}">
+    <div class="sent-body">{{ html | safe }}</div>
+    <div class="hintbar">
+      <button type="button" class="ghost hint-btn" data-level="2">结构</button>
+      <button type="button" class="ghost hint-btn" data-level="3">中文</button>
+    </div>
+    <div class="hint-slot"></div>
+  </div>
+  {% endfor %}
+</section>
+<div id="popup" class="popup" hidden></div>
+  <script>window.ERA = {sessionId: {{ session_id }}, strict: {{ 'true' if strict else 'false' }}};</script>
+  <script src="/static/reader.js"></script>
+{% endblock %}
