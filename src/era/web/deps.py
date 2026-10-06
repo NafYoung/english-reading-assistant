@@ -33,6 +33,7 @@ def nav_context() -> dict:
             ("/dashboard", "仪表盘"),
             ("/evals", "评测"),
             ("/debug/llm-calls", "调用日志"),
+            ("/debug/traces", "Trace"),
         ],
     }
 

@@ -1,0 +1,25 @@
+{% extends "base.html" %}
+{% block title %}Agent Trace · 阅读教练{% endblock %}
+{% block body %}
+<section class="panel">
+  {% if trace_id %}
+  <h1>Trace {{ trace_id }}</h1>
+  <p><a href="/debug/traces">全部</a></p>
+  {% for s in steps %}
+  <article>
+    <p><strong>{{ s["kind"] }}</strong> · step {{ s["step"] }} · {{ s["ts"] }}</p>
+    <pre>{{ s["content"] }}</pre>
+  </article>
+  {% endfor %}
+  {% else %}
+  <h1>Agent traces</h1>
+  <ul>
+    {% for r in rows %}
+    <li><a href="/debug/traces/{{ r['trace_id'] }}">{{ r["trace_id"] }}</a> · {{ r["n"] }} 步 · {{ r["ts"] }}</li>
+    {% else %}
+    <li class="empty">还没有规划记录。</li>
+    {% endfor %}
+  </ul>
+  {% endif %}
+</section>
+{% endblock %}

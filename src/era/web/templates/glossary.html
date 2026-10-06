@@ -1,0 +1,30 @@
+{% extends "base.html" %}
+{% block title %}术语审核 · 阅读教练{% endblock %}
+{% block body %}
+<section class="panel">
+  <h1>术语审核</h1>
+  <p class="lead">词典没有合适义项时，LLM 只能起草，必须你批准后才进入候选。绝不自由生成释义。</p>
+  <p>
+    <a href="/glossary?status=draft">草稿</a> ·
+    <a href="/glossary?status=approved">已批准</a> ·
+    <a href="/glossary?status=rejected">已拒绝</a> ·
+    <a href="/glossary?status=all">全部</a>
+  </p>
+  {% for r in rows %}
+  <article>
+    <h2>{{ r["term"] }} <small>{{ r["status"] }}</small></h2>
+    <form method="post" action="/glossary/{{ r['id'] }}" class="stack">
+      <label>英文释义 <textarea name="en_def" rows="2">{{ r["en_def"] }}</textarea></label>
+      <label>中文释义 <textarea name="zh_def" rows="2">{{ r["zh_def"] }}</textarea></label>
+      <div class="inline">
+        <button type="submit" name="action" value="approve">批准</button>
+        <button type="submit" name="action" value="edit" class="ghost">保存草稿</button>
+        <button type="submit" name="action" value="reject" class="ghost">拒绝</button>
+      </div>
+    </form>
+  </article>
+  {% else %}
+  <p class="empty">队列是空的。导入含 AI 术语的语料后会自动起草一批。</p>
+  {% endfor %}
+</section>
+{% endblock %}

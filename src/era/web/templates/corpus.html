@@ -1,0 +1,91 @@
+{% extends "base.html" %}
+{% block title %}{{ corpus["title"] }} · 阅读教练{% endblock %}
+{% block body %}
+<section class="panel">
+  <h1>{{ corpus["title"] }}</h1>
+  <p class="lead">{{ corpus["goal"] }}</p>
+  {% if err %}<p class="flash err">{{ err }}</p>{% endif %}
+
+  <h2>加入材料</h2>
+  <div class="grid-2">
+    <form method="post" action="/corpora/{{ corpus['id'] }}/add" class="stack">
+      <input type="hidden" name="source_type" value="url">
+      <label>URL <input type="text" name="url" placeholder="https://www.anthropic.com/engineering/building-effective-agents"></label>
+      <label>标题（可选） <input type="text" name="title"></label>
+      <button type="submit">导入 URL</button>
+    </form>
+    <form method="post" action="/corpora/{{ corpus['id'] }}/add" enctype="multipart/form-data" class="stack">
+      <input type="hidden" name="source_type" value="pdf">
+      <label>PDF <input type="file" name="file" accept=".pdf"></label>
+      <button type="submit">导入 PDF</button>
+    </form>
+  </div>
+  <form method="post" action="/corpora/{{ corpus['id'] }}/add" enctype="multipart/form-data" class="stack" style="margin-top:1rem">
+    <input type="hidden" name="source_type" value="md">
+    <label>Markdown / 纯文本文件 <input type="file" name="file" accept=".md,.txt,.markdown"></label>
+    <label>或粘贴
+      <textarea name="pasted" rows="6" placeholder="# Notes"></textarea>
+    </label>
+    <label>标题 <input type="text" name="title"></label>
+    <button type="submit">导入文本</button>
+  </form>
+
+  <h2>差距报告</h2>
+  <p class="hint">覆盖率按 lemma 计，专有名词不进分母（界面按「假设专有名词已知」处理）。≥98% 可独立阅读，≥95% 可引导阅读。</p>
+  {% for doc, report, gap in docs %}
+  <article>
+    <h3>{{ doc["title"] }} <span class="band {{ gap.band }}">{{ "%.1f"|format(gap.coverage*100) }}% · {{ gap.band }}</span></h3>
+    <p class="hint">词次 {{ gap.n_tokens }} · 句 {{ report.get("n_sentences", "—") }} · 丢弃块 {{ report.get("dropped_blocks", 0) }}</p>
+    <div class="grid-2">
+      <div>
+        <h4>通用词缺口</h4>
+        <p>{% for w, n in gap.unknown_general[:12] %}{{ w }}{% if not loop.last %} · {% endif %}{% endfor %}{% if not gap.unknown_general %}（无）{% endif %}</p>
+      </div>
+      <div>
+        <h4>术语缺口</h4>
+        <p>{% for w, n in gap.term_candidates[:12] %}{{ w }}{% if not loop.last %} · {% endif %}{% endfor %}{% if not gap.term_candidates %}（无）{% endif %}</p>
+      </div>
+    </div>
+    {% if report.get("oov_types") %}
+    <p class="hint">OOV 候选：{{ report["oov_types"][:12] | join(", ") }}</p>
+    {% endif %}
+    <p><a href="/read/{{ doc['id'] }}">开始阅读</a></p>
+  </article>
+  {% else %}
+  <p class="empty">还没有文档。</p>
+  {% endfor %}
+
+  <h2>阅读计划</h2>
+  <form method="post" action="/corpora/{{ corpus['id'] }}/plan">
+    <button type="submit">生成 / 更新计划</button>
+  </form>
+  <form method="post" action="/corpora/{{ corpus['id'] }}/plan" style="margin-top:0.4rem">
+    <input type="hidden" name="force_fallback" value="1">
+    <button type="submit" class="ghost">用无效模型测试规则计划兜底</button>
+  </form>
+  {% if plan %}
+    {% if plan.get("fallback") %}
+    <p class="flash err">规则计划（模型失败或输出未通过校验）。</p>
+    {% endif %}
+    <p>{{ plan.get("rationale_zh") }}</p>
+    <ol>
+      {% for doc_id in plan.get("order", []) %}
+      <li>文档 #{{ doc_id }}
+        {% if plan.get("preteach") and plan["preteach"].get(doc_id|string) %}
+        · 预习：{{ plan["preteach"][doc_id|string] | join(", ") }}
+        {% endif %}
+      </li>
+      {% endfor %}
+    </ol>
+    <p>每日配额 {{ plan.get("daily_quota_words") }} 词
+      {% if plan_row %}<a href="/debug/traces/{{ plan_row['trace_id'] }}">查看 trace</a>{% endif %}
+    </p>
+  {% endif %}
+</section>
+<style>
+.band { font-size: 0.85rem; padding: 0.1rem 0.4rem; border: 1px solid var(--rule); }
+.band.independent { background: #e8f0d8; }
+.band.guided { background: #f4e6c8; }
+.band.stretch { background: #f3d6cc; }
+</style>
+{% endblock %}

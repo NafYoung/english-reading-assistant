@@ -199,6 +199,37 @@ def _planner(
 ) -> dict[str, Any]:
     names = [(t.get("function") or {}).get("name") for t in tools]
     n_tool_results = sum(1 for m in messages if m.get("role") == "tool")
+    overview = None
+    for m in reversed(messages):
+        if m.get("role") != "tool":
+            continue
+        try:
+            data = json.loads(m.get("content") or "{}")
+        except json.JSONDecodeError:
+            continue
+        if isinstance(data, dict) and ("suggested_order" in data or "docs" in data):
+            overview = data
+            break
+    if overview and "propose_plan" in names:
+        order = overview.get("suggested_order") or [d["doc_id"] for d in overview.get("docs", [])]
+        return {
+            "content": "",
+            "reasoning_content": "根据概览提交计划。",
+            "tool_calls": [
+                {
+                    "id": "call_plan",
+                    "name": "propose_plan",
+                    "arguments": json.dumps(
+                        {
+                            "order": order,
+                            "preteach": {},
+                            "daily_quota_words": 800,
+                            "rationale_zh": "模拟规划：按规则建议顺序阅读。",
+                        }
+                    ),
+                }
+            ],
+        }
     if n_tool_results == 0 and "get_corpus_overview" in names:
         return {
             "content": "",
@@ -208,25 +239,6 @@ def _planner(
                     "id": "call_overview",
                     "name": "get_corpus_overview",
                     "arguments": "{}",
-                }
-            ],
-        }
-    if n_tool_results < 2 and "propose_plan" in names:
-        return {
-            "content": "",
-            "reasoning_content": "提出一个阅读计划。",
-            "tool_calls": [
-                {
-                    "id": "call_plan",
-                    "name": "propose_plan",
-                    "arguments": json.dumps(
-                        {
-                            "order": [],
-                            "preteach": {},
-                            "daily_quota_words": 800,
-                            "rationale_zh": "模拟规划：按难度从易到难。",
-                        }
-                    ),
                 }
             ],
         }
