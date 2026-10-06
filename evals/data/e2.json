@@ -1,0 +1,8 @@
+[
+  {"text": "wkh dqg fw rx wkh", "gold": {"kind": "garbage"}},
+  {"text": "wkh prgho dqg", "gold": {"kind": "garbage"}},
+  {"text": "The paper describes the model and the language.", "gold": {"kind": "body"}},
+  {"text": "Agents should start with simple workflows.", "gold": {"kind": "body"}},
+  {"text": "dqg wkh dqg wkh dqg", "gold": {"kind": "garbage"}},
+  {"text": "Tool use is added only after the base loop works.", "gold": {"kind": "body"}}
+]

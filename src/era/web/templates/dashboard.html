@@ -1,0 +1,36 @@
+{% extends "base.html" %}
+{% block title %}仪表盘 · 阅读教练{% endblock %}
+{% block body %}
+<section class="panel">
+  <h1>仪表盘</h1>
+  <p class="metric">估计词汇量 {{ profile.vocab_estimate }} · 伪词虚报率 {{ "%.0f"|format((profile.false_alarm_rate or 0)*100) }}%</p>
+  <p class="hint">LLM 成功调用 {{ totals["n"] or 0 }} 次，估算成本 ${{ "%.4f"|format(totals["cost"] or 0) }}（按高峰价粗算：输入 $0.3/M、输出 $1.2/M）。</p>
+  {% if trend %}
+  <p class="metric">每千词 L3：较旧会话 {{ "%.1f"|format(trend.older) }} → 较新 {{ "%.1f"|format(trend.newer) }}（目标是下降；n=1）</p>
+  {% endif %}
+  <h2>会话</h2>
+  <table>
+    <thead>
+      <tr><th>ID</th><th>时间</th><th>L1</th><th>L2</th><th>L3</th><th>L1/千词</th><th>L3/千词</th><th>测验</th><th>$</th></tr>
+    </thead>
+    <tbody>
+      {% for r in rows %}
+      <tr>
+        <td>{{ r.id }}</td>
+        <td>{{ r.started }}</td>
+        <td>{{ r.l1 }}</td>
+        <td>{{ r.l2 }}</td>
+        <td>{{ r.l3 }}</td>
+        <td>{{ "%.1f"|format(r.l1k) if r.l1k is not none else "—" }}</td>
+        <td>{{ "%.1f"|format(r.l3k) if r.l3k is not none else "—" }}</td>
+        <td>{{ "%.0f"|format((r.quiz or 0)*100) }}%</td>
+        <td>{{ "%.4f"|format(r.cost or 0) }}</td>
+      </tr>
+      {% else %}
+      <tr><td colspan="9" class="empty">还没有结束的会话。读完一篇并交卷后会出现趋势。</td></tr>
+      {% endfor %}
+    </tbody>
+  </table>
+  <p class="hint">产品目标是每千词 L3（中文）次数随时间下降。n=1，请如实看，不要写成普遍结论。</p>
+</section>
+{% endblock %}

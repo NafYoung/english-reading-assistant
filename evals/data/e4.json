@@ -1,0 +1,10 @@
+[
+  {"lemma": "the", "sentence": "The model can reach the paper.", "gold": {"unknown": false}},
+  {"lemma": "and", "sentence": "The model and the language overlap.", "gold": {"unknown": false}},
+  {"lemma": "reach", "sentence": "They reach the same conclusion.", "gold": {"unknown": false}},
+  {"lemma": "orchestrator", "sentence": "An orchestrator coordinates tools.", "gold": {"unknown": true}},
+  {"lemma": "embedding", "sentence": "The embedding maps tokens to vectors.", "gold": {"unknown": true}},
+  {"lemma": "workflow", "sentence": "A simple workflow is enough at first.", "gold": {"unknown": true}},
+  {"lemma": "latency", "sentence": "The latency of the system is high.", "gold": {"unknown": true}},
+  {"lemma": "language", "sentence": "The paper describes the language.", "gold": {"unknown": false}}
+]

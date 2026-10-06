@@ -1,0 +1,110 @@
+{% extends "base.html" %}
+{% block title %}评测 · 阅读教练{% endblock %}
+{% block body %}
+<section class="panel">
+  <h1>评测</h1>
+  {% if msg %}<p class="flash ok">{{ msg }}</p>{% endif %}
+  <p class="lead">仓库里的样本是可再分发的短句。你自己的标注写进本地 SQLite；个人语料片段请放 <code>data/evals/</code>，不要提交。</p>
+
+  <nav class="eval-tabs">
+    {% for t, name in [("e1","E1 词形"),("e2","E2 PDF"),("e3","E3 义项"),("e4","E4 未知词"),("e5","E5 理解题"),("e6","E6 结构")] %}
+    <a href="/evals?task={{ t }}" {% if task==t %}class="on"{% endif %}>{{ name }}</a>
+    {% endfor %}
+  </nav>
+  <p class="hint">{{ task }} 已标 {{ n_done }} / {{ n_samples }} 条样本。</p>
+
+  <h2>逐条标注</h2>
+  {% if next_item %}
+  <article>
+    {% if next_item.surface %}<p class="metric">{{ next_item.surface }}</p>{% endif %}
+    {% if next_item.lemma %}<p class="metric">{{ next_item.lemma }}</p>{% endif %}
+    {% if next_item.sentence %}<p class="sentence">{{ next_item.sentence }}</p>{% endif %}
+    {% if next_item.text %}<pre>{{ next_item.text }}</pre>{% endif %}
+    {% if cand and not cand.empty %}
+    <p class="hint">ECDICT 候选（只作参考，请按本句判断）：</p>
+    <ul>
+      {% for s in cand.en %}<li>{{ s.sid }} · {{ s.text }}</li>{% endfor %}
+      {% for s in cand.zh %}<li>{{ s.sid }} · {{ s.text }}</li>{% endfor %}
+    </ul>
+    {% endif %}
+    <form method="post" action="/evals/label" class="stack">
+      <input type="hidden" name="task" value="{{ task }}">
+      <textarea name="item_json" hidden>{{ next_item_json }}</textarea>
+      {% if task == "e1" %}
+      <label>正确 lemma <input type="text" name="lemma" value="{{ next_item.gold.lemma if next_item.gold else next_item.surface }}" required></label>
+      {% elif task == "e2" %}
+      <label>块类型
+        <select name="kind">
+          <option value="body">正文</option>
+          <option value="garbage">垃圾 / 乱码</option>
+        </select>
+      </label>
+      {% elif task == "e3" %}
+      <label>fit
+        <select name="fit">
+          <option value="good">good</option>
+          <option value="partial">partial</option>
+          <option value="no_fit">no_fit（无合适义项）</option>
+        </select>
+      </label>
+      <label>英文义项编号 <input type="text" name="en_sense" placeholder="E1 或留空"></label>
+      <label>中文义项编号 <input type="text" name="zh_sense" placeholder="Z1 或留空"></label>
+      <label>术语编号 <input type="text" name="glossary" placeholder="G1 或留空"></label>
+      {% elif task == "e4" %}
+      <p>这个词在这句话里，对你来说是生词吗？</p>
+      <label class="check"><input type="radio" name="unknown" value="1" required> 不认识</label>
+      <label class="check"><input type="radio" name="unknown" value="0"> 认识</label>
+      {% elif task == "e6" %}
+      <label>有用度 1–3 <input type="number" name="useful" min="1" max="3" value="2"></label>
+      {% else %}
+      <label>label JSON
+        <textarea name="label_json" rows="3" placeholder='{"ok":true}'></textarea>
+      </label>
+      {% endif %}
+      <button type="submit">保存并下一条</button>
+    </form>
+  </article>
+  {% else %}
+  <p class="empty">{% if n_samples %}{{ task }} 样本已标完。{% else %}这个任务没有预置样本，可用下面的 JSON 表单补。{% endif %}</p>
+  {% endif %}
+
+  <h2>自由 JSON 标注</h2>
+  <form method="post" action="/evals/label" class="stack">
+    <input type="hidden" name="task" value="{{ task }}">
+    <label>item JSON
+      <textarea name="item_json" rows="2" placeholder='{"lemma":"transformer","sentence":"..."}'></textarea>
+    </label>
+    <label>label JSON
+      <textarea name="label_json" rows="2" placeholder='{"fit":"no_fit"} 或 {"unknown":true}'></textarea>
+    </label>
+    <button type="submit" class="ghost">保存 JSON</button>
+  </form>
+  <p class="hint">最近 {{ labels|length }} 条。</p>
+
+  <h2>运行评测</h2>
+  <div class="inline">
+    {% for t in ["e1","e2","e3","e4","e5","e6"] %}
+    <form method="post" action="/evals/run">
+      <input type="hidden" name="task" value="{{ t }}">
+      <button type="submit" class="ghost">运行 {{ t }}</button>
+    </form>
+    {% endfor %}
+  </div>
+  <p class="hint">等价命令：<code>uv run era eval e3</code>。报告写入 <code>evals/reports/</code>。</p>
+
+  <h2>报告</h2>
+  {% for name, body in reports %}
+  <article>
+    <h3>{{ name }}</h3>
+    <pre>{{ body }}</pre>
+  </article>
+  {% else %}
+  <p class="empty">还没有报告。点上面的按钮。</p>
+  {% endfor %}
+</section>
+<style>
+.eval-tabs { display:flex; flex-wrap:wrap; gap:0.6rem; margin:0.8rem 0; }
+.eval-tabs a { padding:0.15rem 0.4rem; border:1px solid var(--rule); text-decoration:none; }
+.eval-tabs a.on { border-color: var(--accent); color: var(--accent); }
+</style>
+{% endblock %}

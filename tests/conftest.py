@@ -11,6 +11,7 @@ def isolated(tmp_path, monkeypatch):
     monkeypatch.setenv("ERA_DATA_DIR", str(tmp_path / "data"))
     monkeypatch.setenv("ERA_CONFIG_PATH", str(tmp_path / "config.json"))
     monkeypatch.setenv("ERA_MOCK_LLM", "1")
+    monkeypatch.setenv("ERA_EVAL_REPORTS", str(tmp_path / "eval_reports"))
     monkeypatch.delenv("DEEPSEEK_API_KEY", raising=False)
     data = tmp_path / "data"
     data.mkdir()

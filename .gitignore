@@ -7,10 +7,11 @@ __pycache__/
 venv/
 .DS_Store
 config.json
-data/
-uploads/
+/data/
+/uploads/
 dist/
 build/
 .coverage
 htmlcov/
 *.log
+evals/reports/*.md
