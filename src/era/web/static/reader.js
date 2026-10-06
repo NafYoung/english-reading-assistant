@@ -13,7 +13,7 @@
   }
 
   document.addEventListener("click", async (ev) => {
-    const unk = ev.target.closest(".unknown");
+    const unk = ev.target.closest("[data-lemma]");
     if (unk) {
       const params = new URLSearchParams({
         session_id: sessionId(),

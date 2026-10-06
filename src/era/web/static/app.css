@@ -110,6 +110,15 @@ a { color: var(--accent-2); }
   font: inherit;
   padding: 0;
 }
+button.word {
+  background: none;
+  border: 0;
+  color: inherit;
+  font: inherit;
+  padding: 0;
+  cursor: pointer;
+}
+button.word:hover { background: #efe4d0; }
 .sentence { margin: 0.8rem 0; font-family: var(--serif); font-size: 1.15rem; }
 .hintbar { display: flex; gap: 0.5rem; margin-top: 0.35rem; }
 .popup {
