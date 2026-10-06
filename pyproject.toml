@@ -1,6 +1,6 @@
 [project]
 name = "era"
-version = "0.1.0"
+version = "1.0.0"
 description = "Reading Coach Agent — 目标语料驱动的英语阅读教练"
 readme = "README.md"
 license = { text = "MIT" }

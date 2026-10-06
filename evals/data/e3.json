@@ -1,0 +1,32 @@
+[
+  {
+    "lemma": "latency",
+    "sentence": "The latency of the system is high.",
+    "gold": {"en_sense": "E1", "fit": "good"}
+  },
+  {
+    "lemma": "transformer",
+    "sentence": "A transformer model encodes the input.",
+    "gold": {"fit": "no_fit"}
+  },
+  {
+    "lemma": "reach",
+    "sentence": "They reach the same conclusion.",
+    "gold": {"en_sense": "E1", "fit": "good"}
+  },
+  {
+    "lemma": "embedding",
+    "sentence": "The embedding layer maps tokens to vectors.",
+    "gold": {"fit": "no_fit"}
+  },
+  {
+    "lemma": "attention",
+    "sentence": "Please pay attention to the deadline.",
+    "gold": {"en_sense": "E1", "fit": "good"}
+  },
+  {
+    "lemma": "orchestrator",
+    "sentence": "An orchestrator coordinates several tools.",
+    "gold": {"fit": "no_fit"}
+  }
+]

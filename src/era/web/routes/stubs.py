@@ -7,10 +7,7 @@ from era.web.deps import page
 
 router = APIRouter()
 
-STUBS = [
-    ("/dashboard", "仪表盘", "dashboard"),
-    ("/evals", "评测", "evals"),
-]
+STUBS: list = []
 
 
 def _stub(title: str, slug: str):

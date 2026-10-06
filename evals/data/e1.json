@@ -1,0 +1,8 @@
+[
+  {"surface": "acting", "sentence": "She was acting as the lead agent in the workflow.", "gold": {"lemma": "act"}},
+  {"surface": "studies", "sentence": "The paper studies simple workflows first.", "gold": {"lemma": "study"}},
+  {"surface": "number", "sentence": "The number of tools should stay small.", "gold": {"lemma": "number"}},
+  {"surface": "routing", "sentence": "Request routing sends each call to a tool.", "gold": {"lemma": "routing"}},
+  {"surface": "latency", "sentence": "The latency of the system is high.", "gold": {"lemma": "latency"}},
+  {"surface": "models", "sentence": "Transformer models encode the input.", "gold": {"lemma": "model"}}
+]
