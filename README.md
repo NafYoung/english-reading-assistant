@@ -78,16 +78,20 @@ CLI：`era setup-dict` · `era serve` · `era serve --mock` · `era eval e1`（�
 
 在 `/evals` 逐条标注，或 `uv run era eval e3`。报告写入 `evals/reports/YYYY-MM-DD-eN.md`。
 
-下面是 **mock LLM + 仓库内可再分发短句** 的自动指标（没有真实 API Key）。填入 DeepSeek Key 并标注后请重跑，数字会变。这是工程验收线，不是论文结论。
+下面是 **mock LLM + 仓库内可再分发短句** 在 2026-10-06 跑出的自动指标（没有真实 API Key）。填入 DeepSeek Key 并标注后请重跑。这是工程验收线，不是论文结论。n=1。
 
-| ID | 测什么 | mock 下自动结果 | 基线 |
+| ID | 测什么 | mock 自动结果 | 基线 |
 |---|---|---|---|
-| E1 | 词形还原 | B2 simplemma+词频应显著好于「只把词变小写」；不用 ECDICT `exchange`（它会把 number→numb） | B0 小写；B1 exchange |
-| E2 | PDF 乱码块过滤 | 合成 `wkh`/`dqg` 类垃圾块应被丢掉，正常英文句不应被删 | 不过滤 |
-| E3 | 义项选择 | `transformer` 等必须 `no_fit`，不得编造「注意力机制」类释义 | B0 总选 E1 |
-| E4 | 未知词预测 | 有分级/导入后 F1 应优于「词频前 5000 以外都算未知」 | B0 频次门槛 |
-| E5 | 理解题 | 真实 Key 下走证据句校验；mock 下跳过「不看原文能否猜中」以免占位答案把题全扔掉 | 关闭校验 |
-| E6 | L2 结构 | chunk 必须是原句逐字子串 | — |
+| E1 | 词形还原 | B2 **5/6（83%）**；B0 小写 3/6（50%）。漏掉 `routing→route`（simplemma）。不用 ECDICT `exchange`（number→numb） | B0 / B1 |
+| E2 | PDF 乱码块 | 垃圾块召回 3/3，正文误删 0/3 | 不过滤召回 0 |
+| E3 | 义项选择 | top-1 **6/6**，非法输出 0/6；`transformer`/`embedding`/`orchestrator` 为 `no_fit`，没有编造 AI 释义。B0 总选 E1 只有 3/6 | B0 总选 E1 |
+| E4 | 未知词预测 | 8 条合成样本上 B0 与 B2 都是 F1=1.00，样本太小、不能当结论 | B0 频次门槛 |
+| E5 | 理解题 | mock 跳过「不看原文能否猜中」；有真实 Key 才跑校验 A/B | 关闭校验 |
+| E6 | L2 结构 | 逐字一致 **4/4** | — |
+
+演示（mock LLM，本地界面）：
+
+![五分钟主流程](assets/demo.gif)
 
 E7（两周自用：每千词 L3 趋势）要真实阅读数据，不在安装时编造。
 
