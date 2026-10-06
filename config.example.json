@@ -1,0 +1,15 @@
+{
+  "llm": {
+    "base_url": "https://api.deepseek.com",
+    "api_key": "",
+    "model": "deepseek-flash",
+    "timeout_seconds": 90
+  },
+  "eudic_api_key": "",
+  "maimemo_token": "",
+  "strict_hints": true,
+  "obsidian": {
+    "vault_path": "",
+    "note_path": "Inbox/Reading Coach.md"
+  }
+}

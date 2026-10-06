@@ -1,0 +1,64 @@
+{% extends "base.html" %}
+{% block title %}设置 · 阅读教练{% endblock %}
+{% block body %}
+<section class="panel">
+  <h1>开始之前</h1>
+  <p class="lead">这是跑在你电脑上的阅读教练。先装词典，再粘贴 DeepSeek Key。没有 Key 也能打开应用，但释义选择、句子结构、出题和规划需要 Key（或用 <code>era serve --mock</code> 看界面）。</p>
+
+  {% if saved %}<p class="flash ok">设置已保存到本机 config.json。</p>{% endif %}
+  {% if ping_ok %}<p class="flash ok">测试连接成功。可到「调用日志」查看记录。</p>{% endif %}
+  {% if ping_err %}<p class="flash err">测试连接失败：{{ ping_err }}</p>{% endif %}
+
+  <div class="grid-2">
+    <article>
+      <h2>1. 词典</h2>
+      {% if dict_ready %}
+      <p class="metric">词典已就绪：<strong>{{ dict_count }}</strong> 条</p>
+      <p class="hint">精简 ECDICT，存在 <code>data/ecdict_slim.db</code>。LLM 只能从这些义项里选，不会凭空编释义。</p>
+      {% else %}
+      <p class="metric warn-text">词典未就绪</p>
+      <p>在项目目录运行：</p>
+      <pre><code>uv run era setup-dict</code></pre>
+      <p class="hint">会下载 ECDICT（约 207MB 压缩包），构建约 21 万条精简库。只需做一次。</p>
+      {% endif %}
+    </article>
+    <article>
+      <h2>2. 密钥</h2>
+      <form method="post" action="/setup" class="stack">
+        <label>DeepSeek API Key
+          <input type="password" name="api_key" value="{{ cfg.llm.api_key }}" placeholder="sk-..." autocomplete="off">
+        </label>
+        <label>API base URL
+          <input type="text" name="base_url" value="{{ cfg.llm.base_url }}">
+        </label>
+        <label>模型
+          <input type="text" name="model" value="{{ cfg.llm.model }}">
+        </label>
+        <p class="hint">默认 <code>deepseek-flash</code>。旧名 <code>deepseek-chat</code> 已于 2026-07-24 下线。</p>
+        <label>欧路 API Key（可选，导入生词本）
+          <input type="password" name="eudic_api_key" value="{{ cfg.eudic_api_key }}" autocomplete="off">
+        </label>
+        <label>墨墨开放 API Token（可选）
+          <input type="password" name="maimemo_token" value="{{ cfg.maimemo_token }}" autocomplete="off">
+        </label>
+        <label class="check">
+          <input type="checkbox" name="strict_hints" {% if cfg.strict_hints %}checked{% endif %}>
+          严格模式：同一句必须先看过句子结构，才能打开中文翻译
+        </label>
+        <h3>Obsidian 导出（可选）</h3>
+        <label>Vault 绝对路径
+          <input type="text" name="vault_path" value="{{ cfg.obsidian.vault_path }}" placeholder="/Users/you/Notes">
+        </label>
+        <label>笔记相对路径
+          <input type="text" name="note_path" value="{{ cfg.obsidian.note_path }}">
+        </label>
+        <button type="submit">保存设置</button>
+      </form>
+      <form method="post" action="/setup/ping" class="inline">
+        <button type="submit" class="ghost">测试连接</button>
+        <a href="/debug/llm-calls">查看调用日志</a>
+      </form>
+    </article>
+  </div>
+</section>
+{% endblock %}

@@ -1,0 +1,37 @@
+{% extends "base.html" %}
+{% block title %}LLM 调用日志 · 阅读教练{% endblock %}
+{% block body %}
+<section class="panel">
+  <h1>LLM 调用日志</h1>
+  <p class="lead">每次模型请求都会留下 token、延迟和估算成本。密钥不会写入本表。</p>
+  {% if not rows %}
+  <p class="empty">还没有调用记录。到设置页点「测试连接」。</p>
+  {% else %}
+  <table>
+    <thead>
+      <tr>
+        <th>ID</th><th>时间</th><th>用途</th><th>模型</th><th>prompt</th>
+        <th>think</th><th>in</th><th>out</th><th>ms</th><th>USD</th><th>状态</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for r in rows %}
+      <tr>
+        <td>{{ r["id"] }}</td>
+        <td>{{ r["ts"] }}</td>
+        <td>{{ r["purpose"] }}</td>
+        <td>{{ r["model"] }}</td>
+        <td>{{ r["prompt_version"] }}</td>
+        <td>{{ "是" if r["thinking"] else "否" }}</td>
+        <td>{{ r["input_tokens"] }}</td>
+        <td>{{ r["output_tokens"] }}</td>
+        <td>{{ r["latency_ms"] }}</td>
+        <td>{{ "%.4f"|format(r["cost_usd_est"] or 0) }}</td>
+        <td>{% if r["ok"] %}<span class="ok">ok</span>{% else %}<span class="warn">{{ r["error"] }}</span>{% endif %}</td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+  {% endif %}
+</section>
+{% endblock %}
