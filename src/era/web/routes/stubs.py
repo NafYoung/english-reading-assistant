@@ -8,9 +8,6 @@ from era.web.deps import page
 router = APIRouter()
 
 STUBS = [
-    ("/placement", "分级测试", "placement"),
-    ("/import", "导入词汇", "import"),
-    ("/vocab", "词表", "vocab"),
     ("/corpora", "语料", "corpora"),
     ("/review", "复习", "review"),
     ("/glossary", "术语审核", "glossary"),

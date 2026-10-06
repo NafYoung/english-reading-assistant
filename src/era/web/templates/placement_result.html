@@ -1,0 +1,45 @@
+{% extends "base.html" %}
+{% block title %}分级结果 · 阅读教练{% endblock %}
+{% block body %}
+<section class="panel">
+  <h1>词汇量估计</h1>
+  {% if profile %}
+  <p class="metric">估计词汇量：<strong>{{ profile["vocab_estimate"] }}</strong></p>
+  <p class="hint">伪词「认识」率（虚报）{{ "%.0f"|format((profile["false_alarm_rate"] or 0)*100) }}%。这是按 lemma 计的工程估计，不能直接对比 CEFR 表。</p>
+  <h2>各词频档识别率</h2>
+  <table>
+    <thead><tr><th>档（词频排名）</th><th>校正后识别率</th></tr></thead>
+    <tbody>
+    {% set curve = profile["band_curve"] %}
+    {% if curve %}
+      {# band_curve is JSON text #}
+    {% endif %}
+    </tbody>
+  </table>
+  <div id="curve" data-curve='{{ profile["band_curve"] }}'></div>
+  <table>
+    <thead><tr><th>档</th><th>排名范围</th><th>p</th></tr></thead>
+    <tbody id="curve-body"></tbody>
+  </table>
+  <p><a href="/import">导入欧路 / 墨墨 / TXT</a> · <a href="/vocab">去词表核对</a></p>
+  <p class="hint">若已有目标语料，之后会在结果页抽 10 个边界词做核对（本周若还没有语料则跳过）。</p>
+  {% else %}
+  <p>没有找到结果，<a href="/placement">重新测试</a>。</p>
+  {% endif %}
+</section>
+<script>
+(function () {
+  const el = document.getElementById("curve");
+  if (!el) return;
+  let curve = [];
+  try { curve = JSON.parse(el.dataset.curve || "[]"); } catch (e) { curve = []; }
+  const body = document.getElementById("curve-body");
+  curve.forEach((p, i) => {
+    const tr = document.createElement("tr");
+    const lo = i * 1000 + 1, hi = (i + 1) * 1000;
+    tr.innerHTML = `<td>${i + 1}</td><td>${lo}–${hi}</td><td>${(p * 100).toFixed(0)}%</td>`;
+    body.appendChild(tr);
+  });
+})();
+</script>
+{% endblock %}

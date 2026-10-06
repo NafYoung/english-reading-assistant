@@ -25,6 +25,7 @@ def create_app() -> FastAPI:
     for mod_name in (
         "era.web.routes.placement",
         "era.web.routes.vocab",
+        "era.web.routes.import_vocab",
         "era.web.routes.corpora",
         "era.web.routes.reader",
         "era.web.routes.review",

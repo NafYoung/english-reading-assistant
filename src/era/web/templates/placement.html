@@ -1,0 +1,52 @@
+{% extends "base.html" %}
+{% block title %}分级测试 · 阅读教练{% endblock %}
+{% block body %}
+<section class="panel">
+  <h1>分级测试</h1>
+  <p class="lead">只回答「我认识这个词吗」。里面混了假词，用来校正虚报。大约 5 分钟，共约 80 题。</p>
+  <p>进度：已答 {{ answered }} / {{ total }}（第 {{ start }}–{{ end }} 题）</p>
+  <form method="post" action="/placement" id="place-form" class="stack">
+    <input type="hidden" name="run_id" value="{{ run.id }}">
+    <input type="hidden" name="answers" id="answers" value="">
+    <ol start="{{ start }}">
+      {% for idx, item in batch %}
+      <li class="place-item" data-idx="{{ idx }}">
+        <strong class="word">{{ item.word }}</strong>
+        <button type="button" class="yes" data-val="1">认识</button>
+        <button type="button" class="ghost no" data-val="0">不认识</button>
+      </li>
+      {% endfor %}
+    </ol>
+    <p class="hint">每一题都要点「认识」或「不认识」。全部点完后自动进入下一批。</p>
+  </form>
+</section>
+<script>
+(function () {
+  const answers = {};
+  const items = [...document.querySelectorAll(".place-item")];
+  const hidden = document.getElementById("answers");
+  const form = document.getElementById("place-form");
+  function maybeSubmit() {
+    if (Object.keys(answers).length === items.length) {
+      hidden.value = Object.entries(answers).map(([k, v]) => k + ":" + v).join(",");
+      form.submit();
+    }
+  }
+  items.forEach(li => {
+    li.querySelectorAll("button").forEach(btn => {
+      btn.addEventListener("click", () => {
+        answers[li.dataset.idx] = btn.dataset.val;
+        li.querySelectorAll("button").forEach(b => b.classList.remove("picked"));
+        btn.classList.add("picked");
+        maybeSubmit();
+      });
+    });
+  });
+})();
+</script>
+<style>
+.place-item { margin: 0.7rem 0; display: flex; gap: 0.6rem; align-items: center; }
+.place-item .word { font-family: var(--serif); font-size: 1.35rem; min-width: 9rem; }
+button.picked { outline: 2px solid var(--accent); }
+</style>
+{% endblock %}

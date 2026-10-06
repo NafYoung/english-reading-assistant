@@ -1,0 +1,55 @@
+{% extends "base.html" %}
+{% block title %}导入词汇 · 阅读教练{% endblock %}
+{% block body %}
+<section class="panel">
+  <h1>导入已知词 / 生词本</h1>
+  {% if msg == "txt" %}<p class="flash ok">已从 TXT/CSV 导入 {{ n }} 个词。</p>{% endif %}
+  {% if msg == "eudic" %}<p class="flash ok">已从欧路导入 {{ n }} 个词，标记为 learning。</p>{% endif %}
+  {% if msg == "maimemo" %}<p class="flash ok">已从墨墨写入 {{ n }} 条学习记录。</p>{% endif %}
+  {% if err %}<p class="flash err">{{ err }}</p>{% endif %}
+
+  <div class="grid-2">
+    <article>
+      <h2>TXT / CSV（必备兜底）</h2>
+      <p class="hint">每行一个词。可选第二列状态：known / learning / unknown / ignored。默认 known。</p>
+      <form method="post" action="/import/txt" enctype="multipart/form-data" class="stack">
+        <label>文件
+          <input type="file" name="file" accept=".txt,.csv,.tsv">
+        </label>
+        <label>或直接粘贴
+          <textarea name="pasted" rows="8" placeholder="reach&#10;latency,learning"></textarea>
+        </label>
+        <label>默认状态
+          <select name="default_status">
+            <option value="known">known</option>
+            <option value="learning">learning</option>
+            <option value="unknown">unknown</option>
+          </select>
+        </label>
+        <button type="submit">导入</button>
+      </form>
+    </article>
+    <article>
+      <h2>欧路生词本（可选）</h2>
+      <p class="hint">导入后记为 <code>learning</code>（查过 = 曾经不认识），不是 known。分页参数未用真 Key 验证过，失败时请改用导出文件。</p>
+      <form method="post" action="/import/eudic" class="stack">
+        <label>欧路 API Key
+          <input type="password" name="eudic_api_key" value="{{ cfg.eudic_api_key }}" autocomplete="off">
+        </label>
+        <label>生词本 id（默认 0）
+          <input type="text" name="category_id" value="0">
+        </label>
+        <button type="submit">从欧路导入</button>
+      </form>
+      <h2>墨墨学习记录（可选）</h2>
+      <p class="hint">公测接口，只查词表和分级边界附近的拼写，不拉全量历史。Token 在墨墨 App「我的 → 更多设置 → 实验功能 → 开放 API」。</p>
+      <form method="post" action="/import/maimemo" class="stack">
+        <label>墨墨 Token
+          <input type="password" name="maimemo_token" value="{{ cfg.maimemo_token }}" autocomplete="off">
+        </label>
+        <button type="submit">从墨墨同步</button>
+      </form>
+    </article>
+  </div>
+</section>
+{% endblock %}
