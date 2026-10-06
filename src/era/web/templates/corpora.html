@@ -1,0 +1,23 @@
+{% extends "base.html" %}
+{% block title %}语料 · 阅读教练{% endblock %}
+{% block body %}
+<section class="panel">
+  <h1>目标语料</h1>
+  <p class="lead">把你真正要读懂的材料放进来。系统按你的已知词算覆盖率，再排阅读顺序。</p>
+  <form method="post" action="/corpora" class="stack" style="max-width:28rem">
+    <label>名称 <input type="text" name="title" placeholder="Agent 入门" required></label>
+    <label>目标 <input type="text" name="goal" placeholder="能读懂 Anthropic 工程博客和 ReAct 论文"></label>
+    <button type="submit">新建语料</button>
+  </form>
+  <h2>已有语料</h2>
+  {% if rows %}
+  <ul>
+    {% for r in rows %}
+    <li><a href="/corpora/{{ r['id'] }}">{{ r["title"] }}</a> · {{ counts.get(r['id'], 0) }} 篇</li>
+    {% endfor %}
+  </ul>
+  {% else %}
+  <p class="empty">还没有语料。</p>
+  {% endif %}
+</section>
+{% endblock %}
