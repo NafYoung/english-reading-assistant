@@ -21,10 +21,12 @@ router = APIRouter()
 
 
 def _start_session(conn, doc_id: int) -> int:
+    doc = conn.execute("SELECT n_tokens FROM documents WHERE id=?", (doc_id,)).fetchone()
+    words = int(doc["n_tokens"] or 0) if doc else 0
     cur = conn.execute(
         "INSERT INTO sessions(doc_id, started_at, words_read, l1_count, l2_count, l3_count) "
-        "VALUES (?,?,0,0,0,0)",
-        (doc_id, utcnow()),
+        "VALUES (?,?,?,0,0,0)",
+        (doc_id, utcnow(), words),
     )
     conn.commit()
     return int(cur.lastrowid)

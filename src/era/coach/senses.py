@@ -4,7 +4,7 @@ import json
 import sqlite3
 from pathlib import Path
 
-from era.dictionary.glossary import enqueue_term
+from era.dictionary.glossary import draft_term, enqueue_term
 from era.dictionary.lookup import SenseCandidates, candidates
 from era.llm.client import LLMClient, LLMRequestError
 from era.llm.schemas import SensePick
@@ -55,7 +55,10 @@ def pick_sense(
             "empty": cand.empty,
         }
         if no_fit:
-            enqueue_term(conn, surface, lemma=lemma, source="llm_draft", sentence_id=sentence_id)
+            tid = enqueue_term(conn, surface, lemma=lemma, source="llm_draft", sentence_id=sentence_id)
+            row = conn.execute("SELECT en_def FROM glossary_terms WHERE id=?", (tid,)).fetchone()
+            if row is not None and not str(row["en_def"] or "").strip():
+                draft_term(conn, cfg, tid, [sentence])
         return data
 
     ids = cand.by_id()
